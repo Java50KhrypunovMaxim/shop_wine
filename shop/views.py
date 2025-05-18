@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, mixins
 from rest_framework.pagination import PageNumberPagination
 
-from shop.models import Goods, Wine, Mood, Occasion
+from shop.models import Goods, Wine, Mood
 from shop.serializers import (GoodsSerializer, WineSerializer,
-                              MoodSerializer, OccasionSerializer)
+                              MoodSerializer)
 
 
 class GoodsViewSet(mixins.ListModelMixin,
@@ -26,13 +26,6 @@ class MoodleViewSet(mixins.ListModelMixin,
                    viewsets.GenericViewSet):
     queryset = Mood.objects.all()
     serializer_class = MoodSerializer
-
-
-class OccasionViewSet(mixins.ListModelMixin,
-                   mixins.CreateModelMixin,
-                   viewsets.GenericViewSet):
-    queryset = Occasion.objects.all()
-    serializer_class = OccasionSerializer
 
 
 class OrderPagination(PageNumberPagination):
