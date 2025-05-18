@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from shop.models import Goods, Wine, Mood
+from shop.models import Goods, Wine, Mood, Glass, Corkscrew, Country, Producer
 
 
 class GoodsSerializer(serializers.ModelSerializer):
@@ -12,26 +12,19 @@ class GoodsSerializer(serializers.ModelSerializer):
 class WineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wine
-        fields = (
-            "id", "name", "wine_type", "color", "country", "price")
+        fields = ("id", "name", "wine_type", "color", "country", "price")
 
-    def create(self, validated_data):
-        moods = validated_data.pop('moods', [])
-        wine = Wine.objects.create(**validated_data)
-        wine.moods.set(moods)
-        return wine
 
-    def update(self, instance, validated_data):
-        moods = validated_data.pop('moods', None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+class GlassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Glass
+        fields = ("id", "name")
 
-        if moods is not None:
-            instance.moods.set(moods)
 
-        return instance
-
+class CorkscrewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Corkscrew
+        fields = ("id", "name")
 
 
 class MoodSerializer(serializers.ModelSerializer):
@@ -39,3 +32,14 @@ class MoodSerializer(serializers.ModelSerializer):
         model = Mood
         fields = ("id", "name")
 
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ("id", "name")
+
+
+class ProducerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Producer
+        fields = ("id", "name_of_country", "name_of_region")

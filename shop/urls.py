@@ -9,5 +9,6 @@ router.register("goods", GoodsViewSet)
 router.register("wine", WineViewSet)
 router.register("mood", MoodleViewSet)
 
+
 urlpatterns = [path("", include(router.urls))]
 
