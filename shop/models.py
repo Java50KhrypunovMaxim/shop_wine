@@ -14,28 +14,25 @@ class WineColor(models.TextChoices):
     ROSE = 'rose'
 
 
-class OccasionType(models.TextChoices):
-    GIFT = 'gift'
-    ROMANTIC_DINNER = 'romantic_dinner'
-    CELEBRATION = 'celebration'
-
-
 class MoodType(models.TextChoices):
     ROMANTIC = 'romantic'
     FESTIVE = 'festive'
     CASUAL = 'casual'
 
 
-class Occasion(models.Model):
-    name = models.CharField(
-        max_length=50,
-        choices=OccasionType.choices,
-        default=OccasionType.ROMANTIC_DINNER,
-        unique=True
-    )
+class Country(models.Model):
+    name = models.CharField()
 
     def __str__(self):
-        return self.get_name_display()
+        return self.name
+
+
+class Producer(models.Model):
+    name_of_country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    name_of_region = models.CharField(max_length=200, null=True)
+
+    def __str__(self):
+        return f"{self.name_of_region} of {self.name_of_country}"
 
 
 class Mood(models.Model):
@@ -43,7 +40,6 @@ class Mood(models.Model):
         max_length=50,
         choices=MoodType.choices,
         default=MoodType.FESTIVE,
-        unique=True
     )
 
     def __str__(self):
@@ -56,15 +52,28 @@ class PriceRange(models.TextChoices):
     PREMIUM = 'premium'
 
 
+class MaterialForGlasses(models.TextChoices):
+    GLASS = 'glass'
+    CRYSTAL = 'crystal'
+    PLASTIC = 'plastic'
+
+
+class MaterialForCorkscrew(models.TextChoices):
+    WOOD = 'wood'
+    STAINLESS = 'stainless steel'
+    STEEL = 'steel'
+
+
 class Wine(models.Model):
     name = models.CharField(max_length=200, null=True)
     wine_type = models.CharField(max_length=20, choices=WineType.choices,
                                  default=WineType.DESSERT)
     color = models.CharField(max_length=20, choices=WineColor.choices,
                              default=WineColor.RED)
-    country = models.CharField(max_length=200, null=True, blank=True)
-    producer = models.CharField(max_length=200, null=True, blank=True)
-    occasions = models.ManyToManyField(Occasion, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    producer = models.ForeignKey(Producer, on_delete=models.CASCADE)
+    vintage_year =models.IntegerField(max_length=4, null=True)
+    alcohol = models.IntegerField(max_length=2, null=True)
     moods = models.ManyToManyField(Mood, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price_range = models.CharField(max_length=20, choices=PriceRange.choices,
@@ -78,10 +87,35 @@ class Wine(models.Model):
     def __str__(self):
         return f"{self.name} ({self.get_wine_type_display()}, {self.get_color_display()})"
 
+class Glass(models.Model):
+    name = models.CharField()
+    capacity = models.IntegerField(max_length=3, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    height = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    diameter = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    material = models.CharField(
+        max_length=50,
+        choices=MaterialForGlasses.choices,
+        default=MaterialForGlasses.GLASS,
+    )
+
+class Corkscrew(models.Model):
+    name = models.CharField(max_length=200, null=True)
+    dimensions = models.CharField(max_length=200, null=True)
+    material = models.CharField(
+        max_length=50,
+        choices=MaterialForCorkscrew.choices,
+        default=MaterialForCorkscrew.STAINLESS,
+    )
+
+    def __str__(self):
+        return f"{self.name} ({self.dimensions})"
 
 class Goods(models.Model):
     wine = models.ForeignKey(Wine, on_delete=models.CASCADE)
+    glass = models.ForeignKey(Glass, on_delete=models.CASCADE)
+    corkscrew = models.ForeignKey(Corkscrew, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Goods: {self.wine.name}"
+        return f"Goods: {self.wine.name}, {self.glass.name}, {self.corkscrew.name}"
 
