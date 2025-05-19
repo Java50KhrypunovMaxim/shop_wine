@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -38,6 +39,15 @@ class WineType(models.TextChoices):
     DESSERT = 'dessert'
     SPARKLING = 'sparkling'
 
+class Order(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return str(self.created_at)
 
 class Country(models.Model):
     name = models.CharField(max_length=100)
@@ -89,6 +99,7 @@ class Wine(models.Model):
         default=PriceRange.BUDGET,
     )
     description = models.TextField(blank=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Wine"
@@ -109,6 +120,8 @@ class Glass(models.Model):
         choices=MaterialForGlasses.choices,
         default=MaterialForGlasses.GLASS,
     )
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
+
 
     def __str__(self):
         return f"{self.name} ({self.capacity}ml)"
@@ -122,6 +135,7 @@ class Corkscrew(models.Model):
         choices=MaterialForCorkscrew.choices,
         default=MaterialForCorkscrew.STAINLESS,
     )
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.dimensions})"
