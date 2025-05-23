@@ -154,6 +154,7 @@ class Product(models.Model):
         choices=PriceRange.choices,
         default=PriceRange.BUDGET,
     )
+    image = models.ImageField(upload_to="products/%Y/%m/%d/", blank=True)
 
     def __str__(self):
         return self.name_of_product or "Unnamed Product"
