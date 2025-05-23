@@ -1,6 +1,10 @@
+import pathlib
+import uuid
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.text import slugify
 
 
 class WineColor(models.TextChoices):
@@ -142,6 +146,12 @@ class TypeOfProduct(models.Model):
             parts.append(f"Corkscrew: {self.corkscrew.name}")
         return " + ".join(parts) or "Empty Product"
 
+def product_image_path(instance: "Product", filename: str) -> pathlib.Path:
+    filename = (f"{slugify(instance.name_of_product)}--{uuid.uuid4()}" +
+                pathlib.Path(filename).suffix)
+    return pathlib.Path("uploads/products/") / pathlib.Path(filename)
+
+
 
 class Product(models.Model):
     name_of_product = models.CharField(max_length=200, null=True)
@@ -154,7 +164,7 @@ class Product(models.Model):
         choices=PriceRange.choices,
         default=PriceRange.BUDGET,
     )
-    image = models.ImageField(upload_to="products/%Y/%m/%d/", blank=True)
+    image = models.ImageField(upload_to=product_image_path(), null = True, blank=True)
 
     def __str__(self):
         return self.name_of_product or "Unnamed Product"
