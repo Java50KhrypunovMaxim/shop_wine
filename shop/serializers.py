@@ -1,18 +1,18 @@
 from rest_framework import serializers
 
-from shop.models import Goods, Wine, Mood, Glass, Corkscrew, Country, Producer
+from shop.models import Wine, Mood, Glass, Corkscrew, Country, Producer, Order, Product
 
 
-class GoodsSerializer(serializers.ModelSerializer):
+class ProductsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Goods
-        fields = ("id", "wine")
+        model = Product
+        fields = ("id", "nameOfProduct", "type", "price")
 
 
 class WineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wine
-        fields = ("id", "name", "wine_type", "color", "country", "price")
+        fields = ("id", "name", "wine_type", "color", "country")
 
 
 class GlassSerializer(serializers.ModelSerializer):
@@ -43,3 +43,11 @@ class ProducerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Producer
         fields = ("id", "name_of_country", "name_of_region")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    products = ProductsSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ("id", "user", "products")
