@@ -1,20 +1,24 @@
 from django.urls import path, include
-from rest_framework import routers
-from shop.views import ProductViewSet, WineViewSet, MoodleViewSet, CountryViewSet, ProducerViewSet, GlassViewSet, \
-    CorkscrewViewSet, OrderViewSet
+from rest_framework.routers import DefaultRouter
+from shop.views import (
+    ProductViewSet, WineViewSet, MoodViewSet, CountryViewSet,
+    ProducerViewSet, GlassViewSet, CorkscrewViewSet, OrderViewSet
+)
 
 app_name = "shop"
 
-router = routers.DefaultRouter()
-router.register("products",ProductViewSet)
-router.register("wine", WineViewSet)
-router.register("mood", MoodleViewSet)
-router.register("country", CountryViewSet)
-router.register("producer", ProducerViewSet)
-router.register("glass", GlassViewSet)
-router.register("corkscrew", CorkscrewViewSet)
-router.register("order", OrderViewSet)
+router = DefaultRouter()
+router.register(r"products", ProductViewSet, basename="product")
+router.register(r"wine", WineViewSet, basename="wine")
+router.register(r"mood", MoodViewSet, basename="mood")
+router.register(r"country", CountryViewSet, basename="country")
+router.register(r"producer", ProducerViewSet, basename="producer")
+router.register(r"glass", GlassViewSet, basename="glass")
+router.register(r"corkscrew", CorkscrewViewSet, basename="corkscrew")
+router.register(r"orders", OrderViewSet, basename="order")
 
+urlpatterns = [
+    path("", include(router.urls)),
+]
 
-urlpatterns = [path("", include(router.urls))]
 
