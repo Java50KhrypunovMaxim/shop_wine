@@ -4,13 +4,13 @@ from rest_framework.permissions import IsAuthenticated
 
 from shop.models import (
     Product, Wine, Mood, Country, Producer, Glass,
-    Corkscrew, Order, OrderItem
+    Corkscrew, Order, OrderItem, TypeOfProduct
 )
 from shop.serializers import (
     ProductListSerializer, ProductDetailSerializer,
     WineSerializer, MoodSerializer, CountrySerializer,
     ProducerSerializer, GlassSerializer, CorkscrewSerializer,
-    OrderSerializer
+    OrderSerializer, TypeOfProductSerializer
 )
 
 
@@ -72,3 +72,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class TypeOfProductViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = TypeOfProduct.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = TypeOfProductSerializer
