@@ -137,16 +137,6 @@ class Corkscrew(models.Model):
         return f"{self.product.name_of_product} ({self.dimensions})"
 
 
-class TypeOfProduct(models.Model):
-    product_type = models.CharField(
-        max_length=20,
-        choices=ProductKind.choices,
-        default=ProductKind.WINE,
-    )
-
-    def __str__(self):
-        return f"{self.product_type}"
-
 
 def product_image_path(instance: "Product", filename: str) -> pathlib.Path:
     filename = (f"{slugify(instance.name_of_product)}--{uuid.uuid4()}" +
@@ -156,7 +146,11 @@ def product_image_path(instance: "Product", filename: str) -> pathlib.Path:
 
 class Product(models.Model):
     name_of_product = models.CharField(max_length=200, null=True)
-    product_type = models.ForeignKey(TypeOfProduct, on_delete=models.CASCADE)
+    product_type = models.CharField(
+        max_length=20,
+        choices=ProductKind.choices,
+        default=ProductKind.WINE,
+    )
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     stock_quantity = models.IntegerField(null=True)

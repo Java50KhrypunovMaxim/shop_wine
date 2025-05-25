@@ -1,16 +1,16 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from shop.models import (
     Product, Wine, Mood, Country, Producer, Glass,
-    Corkscrew, Order, OrderItem, TypeOfProduct
+    Corkscrew, Order, OrderItem,
 )
 from shop.serializers import (
     ProductListSerializer, ProductDetailSerializer,
     WineSerializer, MoodSerializer, CountrySerializer,
     ProducerSerializer, GlassSerializer, CorkscrewSerializer,
-    OrderSerializer, TypeOfProductSerializer
+    OrderSerializer,
 )
 
 
@@ -35,6 +35,9 @@ class WineViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Wine.objects.all()
     serializer_class = WineSerializer
     pagination_class = DefaultPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']
+    ordering_fields = ['vintage_year', 'alcohol']
 
 
 class MoodViewSet(viewsets.ReadOnlyModelViewSet):
@@ -72,8 +75,3 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-class TypeOfProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = TypeOfProduct.objects.all()
-    permission_classes = [IsAuthenticated]
-    serializer_class = TypeOfProductSerializer

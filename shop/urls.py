@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from shop.views import (
     ProductViewSet, WineViewSet, MoodViewSet, CountryViewSet,
-    ProducerViewSet, GlassViewSet, CorkscrewViewSet, OrderViewSet, TypeOfProductViewSet
+    ProducerViewSet, GlassViewSet, CorkscrewViewSet, OrderViewSet,
 )
 
 app_name = "shop"
@@ -16,7 +16,7 @@ router.register(r"producer", ProducerViewSet, basename="producer")
 router.register(r"glass", GlassViewSet, basename="glass")
 router.register(r"corkscrew", CorkscrewViewSet, basename="corkscrew")
 router.register(r"orders", OrderViewSet, basename="order")
-router.register(r"typeOfProducts",TypeOfProductViewSet, basename="typeOfProducts")
+
 
 urlpatterns = [
     path("", include(router.urls)),

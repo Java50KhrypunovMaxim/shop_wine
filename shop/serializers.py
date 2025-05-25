@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import (
     Product,
-    TypeOfProduct,
     Wine,
     Glass,
     Corkscrew,
@@ -59,16 +58,6 @@ class CorkscrewSerializer(serializers.ModelSerializer):
         fields = ("id", "product", "dimensions", "material")
 
 
-class TypeOfProductSerializer(serializers.ModelSerializer):
-    wine = WineSerializer(required=False, allow_null=True)
-    glass = GlassSerializer(required=False, allow_null=True)
-    corkscrew = CorkscrewSerializer(required=False, allow_null=True)
-
-    class Meta:
-        model = TypeOfProduct
-        fields = ("id", "wine", "glass", "corkscrew")
-
-
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -76,11 +65,11 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    product_type = TypeOfProductSerializer()
 
     class Meta:
         model = Product
-        fields = ("id", "name_of_product", "description", "price", "stock_quantity", "price_range", "product_type")
+        fields = ("id", "name_of_product", "description", "price",
+                  "stock_quantity", "price_range", "product_type", "image")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
