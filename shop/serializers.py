@@ -40,7 +40,9 @@ class WineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wine
-        fields = ("id", "name", "wine_type", "color", "country", "producer", "vintage_year", "alcohol", "moods", "description")
+        fields = ("id", "product", "wine_type", "color",
+                  "country", "producer", "vintage_year",
+                  "alcohol", "moods")
 
 
 class GlassSerializer(serializers.ModelSerializer):
@@ -48,13 +50,13 @@ class GlassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Glass
-        fields = ("id", "name", "capacity", "country", "height", "diameter", "material")
+        fields = ("id", "product", "capacity", "country", "height", "diameter", "material")
 
 
 class CorkscrewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Corkscrew
-        fields = ("id", "name", "dimensions", "material")
+        fields = ("id", "product", "dimensions", "material")
 
 
 class TypeOfProductSerializer(serializers.ModelSerializer):
