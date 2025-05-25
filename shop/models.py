@@ -2,9 +2,14 @@ import pathlib
 import uuid
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.text import slugify
+
+class ProductKind(models.TextChoices):
+    WINE = 'wine',
+    GLASS = 'glass',
+    CORKSCREW = 'corkscrew',
 
 
 class WineColor(models.TextChoices):
@@ -72,7 +77,9 @@ class Mood(models.Model):
 
 
 class Wine(models.Model):
-    name = models.CharField(max_length=200, null=True)
+    product = models.OneToOneField("Product",
+                                   on_delete=models.CASCADE,
+                                   related_name="wine")
     wine_type = models.CharField(
         max_length=20,
         choices=WineType.choices,
@@ -88,10 +95,9 @@ class Wine(models.Model):
     vintage_year = models.IntegerField(null=True)
     alcohol = models.DecimalField(max_digits=4, decimal_places=1, null=True)
     moods = models.ManyToManyField(Mood, blank=True)
-    description = models.TextField(blank=True)
 
     def __str__(self):
-        return f"{self.name} ({self.get_wine_type_display()}, {self.get_color_display()})"
+        return f"{self.product.name_of_product} ({self.get_wine_type_display()}, {self.get_color_display()})"
 
     class Meta:
         verbose_name = "Wine"
@@ -99,7 +105,9 @@ class Wine(models.Model):
 
 
 class Glass(models.Model):
-    name = models.CharField(max_length=100)
+    product = models.OneToOneField("Product",
+                                   on_delete=models.CASCADE,
+                                   related_name="glass")
     capacity = models.IntegerField(null=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     height = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -111,11 +119,13 @@ class Glass(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.capacity}ml)"
+        return f"{self.product.name_of_product} ({self.capacity}ml)"
 
 
 class Corkscrew(models.Model):
-    name = models.CharField(max_length=200, null=True)
+    product = models.OneToOneField("Product",
+                                   on_delete=models.CASCADE,
+                                   related_name="corkscrew")
     dimensions = models.CharField(max_length=200, null=True)
     material = models.CharField(
         max_length=50,
@@ -124,33 +134,24 @@ class Corkscrew(models.Model):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.dimensions})"
+        return f"{self.product.name_of_product} ({self.dimensions})"
 
 
 class TypeOfProduct(models.Model):
-    wine = models.ForeignKey(Wine, on_delete=models.CASCADE, null=True, blank=True)
-    glass = models.ForeignKey(Glass, on_delete=models.CASCADE, null=True, blank=True)
-    corkscrew = models.ForeignKey(Corkscrew, on_delete=models.CASCADE, null=True, blank=True)
-
-    def clean(self):
-        if not any([self.wine, self.glass, self.corkscrew]):
-            raise ValidationError("At least one product must be included in TypeOfProduct.")
+    product_type = models.CharField(
+        max_length=20,
+        choices=ProductKind.choices,
+        default=ProductKind.WINE,
+    )
 
     def __str__(self):
-        parts = []
-        if self.wine:
-            parts.append(f"Wine: {self.wine.name}")
-        if self.glass:
-            parts.append(f"Glass: {self.glass.name}")
-        if self.corkscrew:
-            parts.append(f"Corkscrew: {self.corkscrew.name}")
-        return " + ".join(parts) or "Empty Product"
+        return f"{self.product_type}"
+
 
 def product_image_path(instance: "Product", filename: str) -> pathlib.Path:
     filename = (f"{slugify(instance.name_of_product)}--{uuid.uuid4()}" +
                 pathlib.Path(filename).suffix)
     return pathlib.Path("uploads/products/") / pathlib.Path(filename)
-
 
 
 class Product(models.Model):
@@ -164,15 +165,17 @@ class Product(models.Model):
         choices=PriceRange.choices,
         default=PriceRange.BUDGET,
     )
-    image = models.ImageField(upload_to=product_image_path, null = True, blank=True)
+    image = models.ImageField(upload_to=product_image_path, null=True, blank=True)
 
     def __str__(self):
         return self.name_of_product or "Unnamed Product"
 
 
+
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    orderItems = models.ManyToManyField(Product, through='OrderItem')
 
     class Meta:
         ordering = ['created_at']
