@@ -6,3 +6,4 @@ sqlparse==0.4.4
 drf-spectacular==0.28.0
 pillow==10.4.0
 # mysqlclient==1.4.3
+django-import-export~=4.3.7
