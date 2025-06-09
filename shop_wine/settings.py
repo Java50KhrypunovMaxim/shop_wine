@@ -143,6 +143,9 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 3,
+    'DEFAULT_AUTHENTICATION_CLASSES' : [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 SPECTACULAR_SETTINGS = {
@@ -152,6 +155,17 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://back-vonoselecto-bedagphgf7cgeqf3.uksouth-01.azurewebsites.net',
+]
+
+
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CORS_ALLOWED_ORIGINS = [
+    "https://back-vonoselecto-bedagphgf7cgeqf3.uksouth-01.azurewebsites.net",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
